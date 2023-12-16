@@ -10,7 +10,7 @@ What is the sum of all of the part numbers in the engine schematic?
 """
 import re
 
-INPUT_FILE = "example.txt"
+INPUT_FILE = "input.txt"
 
 matrix = []
 sum = 0
@@ -30,11 +30,8 @@ for n, elems in enumerate(matrix):
     for number in numbers:
         position_start = line.strip().find(number)
         position_end = position_start + len(number) - 1
-        # print(
-        #     f"the position of {number} in line {n} is {position_start}:{position_end}"
-        # )
 
-        symbols = set(["*", "#", "$", "+"])
+        symbols = set(["@", "#", "$", "%", "&", "*", "-", "=", "+", "/"])
 
         search_start = 0 if position_start == 0 else position_start - 1
         search_end = position_end + 2
