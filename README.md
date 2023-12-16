@@ -14,3 +14,4 @@ https://adventofcode.com/
 | Day 1: Part Two | [Task](https://adventofcode.com/2023/day/1) | [Solution](./day1/solve2.py) |
 | Day 2: Cube Conundrum | [Task](https://adventofcode.com/2023/day/2) | [Solution](./day2/solve.py) |
 | Day 2: Part Two | [Task](https://adventofcode.com/2023/day/2) | [Solution](./day2/solve2.py) |
+| Day 3: Gear Ratios | [Task](https://adventofcode.com/2023/day/3) | [Solution](./day3/solve.py) |
