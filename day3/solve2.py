@@ -1,13 +1,3 @@
-"""
-The engine schematic (your puzzle input) consists of a visual representation of the engine.
-There are lots of numbers and symbols you don't really understand,
-but apparently any number adjacent to a symbol, even diagonally,
-is a "part number" and should be included in your sum.
-(Periods (.) do not count as a symbol.)
-
-What is the sum of all of the part numbers in the engine schematic?
-
-"""
 import re
 
 INPUT_FILE = "example.part2.txt"
@@ -31,10 +21,9 @@ for n, elems in enumerate(matrix):
     # by multiplying those numbers together
     # This time, you need to find the gear ratio of every gear and add them all up
 
-    # symbols = set(["@", "#", "$", "%", "&", "*", "-", "=", "+", "/"])
     gears = re.findall("[\*]{1}", line.strip())
 
-    print(gears)
+    # print(gears)
 
     START_SEARCH = 0
     for gear in gears:
@@ -42,48 +31,62 @@ for n, elems in enumerate(matrix):
         CUR_LINE = "".join(matrix[n])
         NEXT_LINE = "".join(matrix[n + 1]) if n + 1 < len(matrix) else ""
 
-        POS_START = CUR_LINE.find("*", START_SEARCH)
-        search_start = 0 if POS_START == 0 else POS_START - 1
+        GEAR_POSITION = CUR_LINE.find("*", START_SEARCH)
+        search_start = 0 if GEAR_POSITION == 0 else GEAR_POSITION - 1
         search_end = search_start + 2
 
         # get all numbers of previous line
         # and check if any of these numbers is adjacent to the gear
         # by checking it's existence within search_start and search_end
+        print("")
+        print(f"{n-1}:> {PREV_LINE}")
+        print(f"{n}:{GEAR_POSITION} {line}")
+        print(f"{n+1}:> {NEXT_LINE}")
 
-    # START_SEARCH = 0
-    # for number in numbers:
-    #     PREV_LINE = "".join(matrix[n - 1])
-    #     CUR_LINE = "".join(matrix[n])
-    #     NEXT_LINE = "".join(matrix[n + 1]) if n + 1 < len(matrix) else ""
+        # get numbers in previous line
+        # to find out if any of these numbers is adjacent
+        # to our current gear (of loop)
+        prev_line_numbers = re.findall("\d{1,}", PREV_LINE.strip())
+        prev_line_num_start_search = 0
+        for number in prev_line_numbers:
+            prev_line_num_start = PREV_LINE.find(number, prev_line_num_start_search)
+            prev_line_num_end = prev_line_num_start + len(number) - 1
+            print(
+                f"number {number} has position {prev_line_num_start},{prev_line_num_end}"
+            )
+            if GEAR_POSITION >= (prev_line_num_start - 1) and GEAR_POSITION <= (
+                prev_line_num_end + 1
+            ):
+                print(
+                    f"{number} of prev line is adjacent to the gear {GEAR_POSITION} ({prev_line_num_start-1},{prev_line_num_end+1})"
+                )
 
-    #     # if current number exists more than once in current line,
-    #     # We need to find the right position
-    #     POS_START = CUR_LINE.find(number, START_SEARCH)
-    #     POS_END = POS_START + len(number) - 1
-    #     search_start = 0 if POS_START == 0 else POS_START - 1
-    #     search_end = POS_END + 2
+                # get numbers in next line
+                # to find out if any of these numbers is adjacent
+                # to our current gear (of loop)
+                next_line_numbers = re.findall("\d{1,}", NEXT_LINE.strip())
+                next_line_num_start_search = 0
+                for next_line_number in next_line_numbers:
+                    next_line_num_start = NEXT_LINE.find(
+                        next_line_number, next_line_num_start_search
+                    )
+                    next_line_num_end = next_line_num_start + len(number) - 1
+                    if GEAR_POSITION >= (next_line_num_start - 1) and GEAR_POSITION <= (
+                        next_line_num_end + 1
+                    ):
+                        print(
+                            f"{next_line_number} of next line is adjacent to the gear {GEAR_POSITION} ({next_line_num_start-1},{next_line_num_end+1})"
+                        )
+                        print(f">>> {number}x{next_line_number}")
+                        sum = sum + (int(number) * int(next_line_number))
+                        break
 
-    #     # Next to symbol in actual line?
-    #     print(f"")
-    #     print(f"number {number} in line {n}")
-    #     if any(char in symbols for char in CUR_LINE[search_start:search_end]):
-    #         print(f"symbol found in current line: {CUR_LINE[search_start:search_end]}")
-    #         sum = sum + int(number)
+                    next_line_num_start_search = next_line_num_end
 
-    #     # Next to a symbol in previous line?
-    #     elif n > 0 and any(
-    #         char in symbols for char in PREV_LINE[search_start:search_end]
-    #     ):
-    #         print(
-    #             f"symbol found in previous line: {PREV_LINE[search_start:search_end]}"
-    #         )
-    #         sum = sum + int(number)
+                prev_line_num_start_search = prev_line_num_end
 
-    #     # Next to a symbol in
-    #     elif any(char in symbols for char in NEXT_LINE[search_start:search_end]):
-    #         print(f"symbol found in next line: {NEXT_LINE[search_start:search_end]}")
-    #         sum = sum + int(number)
+        # move the start search pointer
+        # so the current gear wont be matched in next loop
+        START_SEARCH = GEAR_POSITION
 
-    #     START_SEARCH = POS_START + 1
-
-print(f"The sum of all of the part numbers in the engine schematic: {sum}")
+print(f"The sum of all of the gear ratios in your engine schematic: {sum}")
