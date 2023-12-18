@@ -10,7 +10,7 @@ What is the sum of all of the part numbers in the engine schematic?
 """
 import re
 
-INPUT_FILE = "example.txt"
+INPUT_FILE = "input.txt"
 
 matrix = []
 sum = 0
@@ -24,41 +24,27 @@ with open(INPUT_FILE) as file:
 
 for n, elems in enumerate(matrix):
     line = "".join(matrix[n])
-    numbers = re.findall("\d{1,}", line.strip())
     symbols = set(["@", "#", "$", "%", "&", "*", "-", "=", "+", "/"])
+    numbers = re.findall("\d{1,}", line.strip())
 
-    # if is_part_number(number, matrix):
+    START_SEARCH = 0
     for number in numbers:
-        CUR_LINE_WITHOUT_DOTS = line.strip().replace(".", "")
-
-        cur_line_position_start = CUR_LINE_WITHOUT_DOTS.find(number)
-        cur_line_position_end = cur_line_position_start + len(number) - 1
-        cur_line_search_start = (
-            0 if cur_line_position_start == 0 else cur_line_position_start - 1
-        )
-        cur_line_search_end = cur_line_position_end + 2
-
         PREV_LINE = "".join(matrix[n - 1])
         CUR_LINE = "".join(matrix[n])
         NEXT_LINE = "".join(matrix[n + 1]) if n + 1 < len(matrix) else ""
 
-        position_start = CUR_LINE.find(number)
-        position_end = position_start + len(number) - 1
-        search_start = (
-            0 if position_start == 0 else position_start - 1
-        )
-        search_end = position_end + 2
+        # if current number exists more than once in current line,
+        # We need to find the right position
+        POS_START = CUR_LINE.find(number, START_SEARCH)
+        POS_END = POS_START + len(number) - 1
+        search_start = 0 if POS_START == 0 else POS_START - 1
+        search_end = POS_END + 2
 
         # Next to symbol in actual line?
         print(f"")
         print(f"number {number} in line {n}")
-        if any(
-            char in symbols
-            for char in CUR_LINE[cur_line_search_start:cur_line_search_end]
-        ):
-            print(
-                f"symbol found in current line: {CUR_LINE[cur_line_search_start:cur_line_search_end]}"
-            )
+        if any(char in symbols for char in CUR_LINE[search_start:search_end]):
+            print(f"symbol found in current line: {CUR_LINE[search_start:search_end]}")
             sum = sum + int(number)
 
         # Next to a symbol in previous line?
@@ -74,5 +60,7 @@ for n, elems in enumerate(matrix):
         elif any(char in symbols for char in NEXT_LINE[search_start:search_end]):
             print(f"symbol found in next line: {NEXT_LINE[search_start:search_end]}")
             sum = sum + int(number)
+
+        START_SEARCH = POS_START + 1
 
 print(f"The sum of all of the part numbers in the engine schematic: {sum}")
